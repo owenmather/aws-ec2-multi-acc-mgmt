@@ -1,0 +1,35 @@
+name: "1: Ansible Playbook"
+run-name: "Ansible Playbook run by ${{ github.actor }}"
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  run-ansible-playbook:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        account_id: [MY_ACCOUNT_ID1, MY_ACCOUNT_ID2]
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - run: "Echo ${{ matrix.account_id }}"
+
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v2
+#        with:
+#          role-to-assume: arn:aws:iam::${{ matrix.account_id }}:role/YOUR_IAM_ROLE_NAME
+#          aws-region: YOUR_AWS_REGION
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook ansible/playbook.yml --extra-vars "account=${{ matrix.account_id }}"

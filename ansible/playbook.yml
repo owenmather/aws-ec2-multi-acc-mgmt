@@ -1,0 +1,12 @@
+---
+- name: Base playbook for PoC
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+    - shell: "echo 'Hello world from {{account}}'"
+      register: test
+
+    - debug:
+        var: test
+
