@@ -7,9 +7,11 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    name: "${{ matrix.account_id }} - ${{matrix.region}}"
     strategy:
       matrix:
         account_id: [MY_ACCOUNT_ID1, MY_ACCOUNT_ID2]
+        region: [us-east-1, eu-west-1]
     permissions:
       id-token: write
       contents: read
@@ -17,7 +19,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - run: echo "Running on ACCOUNT ${{ matrix.account_id }}"
+      - run: echo "Running on ${{ matrix.account_id }} ${{matrix.region}}"
 
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v2
@@ -32,4 +34,4 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook ansible/playbook.yml --extra-vars "account=${{ matrix.account_id }}"
+          ansible-playbook ansible/playbook.yml --extra-vars "account=${{ matrix.account_id }}" --extra-vars "region=${{matrix.region}}"

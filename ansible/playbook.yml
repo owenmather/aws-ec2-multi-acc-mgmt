@@ -4,9 +4,8 @@
   gather_facts: true
 
   tasks:
-    - shell: "echo 'Hello world from {{account}}'"
-      register: test
+    - shell: "echo 'Begin once off setup for {{account}} {{region}}'"
+      register: account_region_setup
 
     - debug:
-        var: test
-
+        var: account_region_setup
