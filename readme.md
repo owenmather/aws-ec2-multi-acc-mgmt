@@ -43,6 +43,14 @@ From this point in the document we will use the following variable names for ref
 The user should create a **private** GitHub repo for the PoC in their GitHub Org/Acc  
 The user should copy all files in this repo to theirs (can omit this readme if required)  
 
+The user must set values for the account(s) and region(s) targeted in [ansible_run.yml](.github/workflows/ansible_run.yml)  
+
+![img.png](images/img.png)
+
+The user must replace the value for `$OIDC_ROLE_NAME` in [ansible_run.yml](.github/workflows/ansible_run.yml)  
+![img_1.png](images/img_1.png)
+**:bangbang This must be the same name in all target accounts!**
+
 ### 1) AWS S3 Bucket for Ansible SSM Connection Plugin*
 
 ### 2) Example Ansible playbook to test PoC
