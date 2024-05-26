@@ -8,30 +8,57 @@
       register: account_region_setup
 
     - debug:
-        var: account_region_setup
----
-- hosts: all
-  become: true
-  vars:
-    ansible_connection: aws_ssm
-    ansible_aws_ssm_bucket_name: # a bucket is required
-    ansible_aws_ssm_region: us-east-1
+       var: account_region_setup.stdout
 
+# The following block connects to ALL discovered hosts in this AWS Account + Region
+# It will run the below tasks on every host discovered
+# It is up to the end user to put appropriate filters in place with the ec2 inventory plugin to build
+# Inventories / hosts lists as suits their requirements - tag based, running only, windows only etc
+- hosts: aws_ec2
+  gather_facts: false
   tasks:
     - name: Wait for SSM Connection from Host
       ansible.builtin.wait_for_connection:
+        timeout: 60
 
       #https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_metadata_facts_module.html
     - name: Gather Instance Metadata
       amazon.aws.ec2_metadata_facts:
 
-    - name: Print EC2 instance information
+    - name: Print Current EC2 instance information
       debug:
-        msg: >
-          Account ID: {{ ansible_ec2_instance_identity_document_accountid }}
-          Instance ID: {{ ansible_ec2_instance_id }}
-          Instance Type: {{ ansible_ec2_instance_type }}
-          Private IP: {{ ansible_ec2_private_ip }}
-          Public IP: {{ ansible_ec2_public_ip }}
-          Region: {{ ansible_ec2_placement_region }}
-          Availability Zone: {{ ansible_ec2_placement_availability_zone }}
+        msg:
+          - "Account ID: {{ ansible_ec2_instance_identity_document_accountid }}"
+          - "Instance ID: {{ ansible_ec2_instance_id }}"
+          - "Instance Type: {{ ansible_ec2_instance_type }}"
+          - "Private IP: {{ ansible_ec2_local_ipv4 | default('NOT_CONFIGURED') }}"
+          - "Public IP: {{ ansible_ec2_public_ipv4 | default('NOT_CONFIGURED') }}"
+          - "Region: {{ ansible_ec2_placement_region }}"
+          - "Availability Zone: {{ ansible_ec2_placement_availability_zone }}"
+
+    - name: Show the base user
+      shell: whoami
+      register: base_user
+
+    - name: Print the base user
+      debug:
+        var: base_user.stdout
+
+    - name: Show how to change to ec2-user
+      shell: whoami
+      register: become_ec2_user
+      become: true
+      become_user: ec2-user
+
+    - name: Print the ec2-user user
+      debug:
+        var: become_ec2_user.stdout
+
+    - name: Show how to change to root
+      shell: whoami
+      register: whois_become_user
+      become: true
+
+    - name: Print the root user
+      debug:
+        var: whois_become_user.stdout

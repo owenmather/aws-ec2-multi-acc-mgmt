@@ -1,5 +1,5 @@
-name: "1: Ansible Playbook"
-run-name: "Ansible Playbook run by ${{ github.actor }}"
+name: "2: Ansible List all Discovered Instances"
+run-name: "Ansible List Discoverd Instances by ${{ github.actor }}"
 
 on:
   workflow_dispatch: {}
@@ -7,8 +7,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: "${{ matrix.account_id }} - ${{matrix.region}}"
+    name: "${{ matrix.account_id }}: ${{matrix.region}}"
     strategy:
+      fail-fast: false
       matrix:
         account_id: [MY_ACCOUNT_ID1, MY_ACCOUNT_ID2]
         region: [us-east-1, eu-west-1]
@@ -18,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: echo "Running on ${{ matrix.account_id }} ${{matrix.region}}"
 
       - name: Configure AWS credentials
@@ -33,6 +34,7 @@ jobs:
           cache: 'pip' # caching pip dependencies
       - run: pip install -r requirements.txt
 
-      - name: Run Ansible Playbook
+      - name: Show Ansible Inventory
         run: |
-          ansible-playbook -i ansible/inventory/${{matrix.region}}.aws_ec2.yml ansible/playbook.yml --extra-vars "account=${{ matrix.account_id }}" --extra-vars "region=${{matrix.region}}"
+          ansible-inventory -i ansible/inventory/${{matrix.region}}.aws_ec2.yml --list --export --output "${{ matrix.account_id }}-${{matrix.region}}"
+          jq .aws_ec2.hosts "${{ matrix.account_id }}-${{matrix.region}}" >> $GITHUB_STEP_SUMMARY
