@@ -100,6 +100,9 @@ The IAM Oidc role in each AWS Account also requires the following permissions on
 
 A example granular policy is not provided for the PoC as this is also covered by the AdministratorAccess default policy  
 
+### 5: AWS SSM Service Running on each target ec2 instance 
+
+The AWS SSM Service must be running on each ec2 target host - installing/configuring the SSM Agent is not covered in this PoC  
 
 ## Testing 
 
