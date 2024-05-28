@@ -6,7 +6,7 @@
             "Principal": {
                 "AWS": [
                     "arn:aws:iam::$FIRST_AWS_ACCOUNT_ID:role/$OIDC_ROLE_NAME",
-                    "arn:aws:iam::$FIRST_AWS_ACCOUNT_ID:role/$OIDC_ROLE_NAME"
+                    "arn:aws:iam::$SECOND_AWS_ACCOUNT_ID:role/$OIDC_ROLE_NAME"
                 ]
             },
             "Action": [
